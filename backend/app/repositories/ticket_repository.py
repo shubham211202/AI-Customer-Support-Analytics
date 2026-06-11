@@ -1,5 +1,5 @@
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session, selectinload
@@ -85,13 +85,13 @@ class TicketRepository:
 
     def update_status(self, ticket: Ticket, status: str) -> Ticket:
         ticket.status = status
-        ticket.updated_at = datetime.now(UTC)
+        ticket.updated_at = datetime.now(timezone.utc)
         self.db.add(ticket)
         self.db.flush()
         return ticket
 
     def soft_delete(self, ticket: Ticket) -> None:
-        ticket.deleted_at = datetime.now(UTC)
-        ticket.updated_at = datetime.now(UTC)
+        ticket.deleted_at = datetime.now(timezone.utc)
+        ticket.updated_at = datetime.now(timezone.utc)
         self.db.add(ticket)
         self.db.flush()

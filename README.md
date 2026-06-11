@@ -42,7 +42,12 @@ docs/      Architecture notes
 
 ## Local Setup
 
+<<<<<<< HEAD
 Requires Python 3.10 or newer.
+=======
+Requires Python 3.10 or newer. If VS Code is using Python 3.10.11, create the
+virtual environment with that interpreter:
+>>>>>>> 66babbfa (Support Python 3.10 development environment)
 
 ```powershell
 cd backend
