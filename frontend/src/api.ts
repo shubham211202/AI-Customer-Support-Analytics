@@ -71,10 +71,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
         if (typeof errBody.detail === 'string') {
           errorMessage = errBody.detail;
         } else if (Array.isArray(errBody.detail)) {
-          errorMessage = errBody.detail.map((e: any) => e.msg).join(', ');
+          errorMessage = errBody.detail.map((e: { msg: string }) => e.msg).join(', ');
         }
       }
-    } catch (_) {
+    } catch {
       // fallback to status text
     }
     throw new Error(errorMessage);

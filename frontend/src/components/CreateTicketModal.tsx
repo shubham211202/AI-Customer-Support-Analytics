@@ -49,8 +49,9 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
       const newTicket = await api.createTicket(payload);
       onTicketCreated(newTicket);
       onClose();
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit ticket.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit ticket.';
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

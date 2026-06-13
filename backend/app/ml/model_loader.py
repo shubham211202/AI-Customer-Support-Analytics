@@ -41,7 +41,9 @@ class SupportTicketAnalyzer:
     def _get_latest_model_uri(self, model_name: str, tracking_uri: str) -> str:
         client = MlflowClient(tracking_uri=tracking_uri)
         # Fetch latest versions across all stages
-        latest_versions = client.get_latest_versions(model_name, stages=["None", "Production", "Staging"])
+        latest_versions = client.get_latest_versions(
+            model_name, stages=["None", "Production", "Staging"]
+        )
         if latest_versions:
             # Sort by version string parsed as integer descending
             sorted_versions = sorted(latest_versions, key=lambda v: int(v.version), reverse=True)

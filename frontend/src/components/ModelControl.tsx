@@ -17,8 +17,9 @@ export const ModelControl: React.FC<ModelControlProps> = ({ onShowToast }) => {
       const result = await api.reloadModels();
       setActiveModelVersion(result.model_version);
       onShowToast(`Successfully reloaded MLflow model version ${result.model_version || 'latest'}`);
-    } catch (err: any) {
-      setError(err.message || 'Failed to sync with MLflow registry.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to sync with MLflow registry.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

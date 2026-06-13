@@ -27,8 +27,9 @@ export const TicketDetailModal: React.FC<TicketDetailModalProps> = ({
     try {
       const updated = await api.updateTicketStatus(ticket.id, newStatus);
       onTicketUpdated(updated);
-    } catch (err: any) {
-      setError(err.message || 'Failed to update status.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update status.';
+      setError(errorMessage);
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -41,8 +42,9 @@ export const TicketDetailModal: React.FC<TicketDetailModalProps> = ({
     try {
       const updated = await api.rerunPrediction(ticket.id);
       onTicketUpdated(updated);
-    } catch (err: any) {
-      setError(err.message || 'Failed to re-run AI prediction.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to re-run AI prediction.';
+      setError(errorMessage);
     } finally {
       setIsRerunningPredict(false);
     }
@@ -57,8 +59,9 @@ export const TicketDetailModal: React.FC<TicketDetailModalProps> = ({
       await api.deleteTicket(ticket.id);
       onTicketDeleted(ticket.id);
       onClose();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete ticket.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to delete ticket.';
+      setError(errorMessage);
       setIsDeleting(false);
     }
   };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from './api';
 import type { TicketRead } from './api';
 import { Dashboard } from './components/Dashboard';
@@ -20,31 +20,33 @@ function App() {
   // Toast notifications
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const showToast = (msg: string) => {
+  const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
     }, 4000);
-  };
+  }, []);
 
   // Fetch all tickets on mount
-  const fetchTickets = async () => {
+  const fetchTickets = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await api.getTickets({ limit: 100 });
       setTickets(response.items);
-    } catch (err: any) {
-      setError(err.message || 'Failed to retrieve tickets from server.');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to retrieve tickets from server.';
+      setError(errorMessage);
       showToast('Error fetching tickets.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
     fetchTickets();
-  }, []);
+  }, [fetchTickets]);
 
   // Event Handlers for child components
   const handleTicketCreated = (newTicket: TicketRead) => {
