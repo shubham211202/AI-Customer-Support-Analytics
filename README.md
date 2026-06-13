@@ -1,7 +1,6 @@
 # AI-Powered Customer Support Analytics Platform
 
-Production-grade web application project for learning AI/ML, MLOps, Docker,
-Kubernetes, Terraform, GitOps, monitoring, and cloud-native architecture.
+Production-grade web application project for learning AI/ML, MLOps, Docker, Kubernetes, Terraform, GitOps, monitoring, and cloud-native architecture.
 
 ## Roadmap
 
@@ -42,12 +41,7 @@ docs/      Architecture notes
 
 ## Local Setup
 
-<<<<<<< HEAD
-Requires Python 3.10 or newer.
-=======
-Requires Python 3.10 or newer. If VS Code is using Python 3.10.11, create the
-virtual environment with that interpreter:
->>>>>>> 66babbfa (Support Python 3.10 development environment)
+Requires Python 3.10 or newer. If VS Code is using Python 3.10.11, create the virtual environment with that interpreter:
 
 ```powershell
 cd backend
@@ -58,6 +52,46 @@ copy ..\.env.example .env
 alembic upgrade head
 uvicorn app.main:app --reload
 ```
+
+## API Docs
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## VS Code Localhost Workflow
+
+Open the project folder in VS Code:
+
+```powershell
+code "C:\Users\Shubham Kumar\AndroidStudioProjects\AI-Customer-Support-Analytics"
+```
+
+Create the backend virtual environment:
+
+```powershell
+cd backend
+py -3.10 -m venv .venv
+.\.venv\Scripts\activate
+pip install -e ".[dev]"
+```
+
+For the first quick local run, use SQLite:
+
+```powershell
+$env:DATABASE_URL="sqlite:///./local.db"
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+You can also use VS Code directly:
+
+```text
+Terminal > Run Task > Backend: migrate local SQLite
+Run and Debug > Backend: FastAPI localhost
+```
+
+This SQLite path is only for fast local development. The production-shaped database target for this project is PostgreSQL.
 
 ## Tests
 
@@ -74,12 +108,6 @@ Use this order:
 Terminal > Run Task > Backend: install dependencies
 Terminal > Run Task > Backend: migrate local SQLite
 Run and Debug > Backend: FastAPI localhost
-```
-
-## API Docs
-
-```text
-http://127.0.0.1:8000/docs
 ```
 
 Tests use SQLite in memory for fast feedback. Local development and production use PostgreSQL through `DATABASE_URL`.

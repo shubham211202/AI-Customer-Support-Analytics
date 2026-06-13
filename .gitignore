@@ -13,3 +13,10 @@ build/
 *.egg-info/
 artifacts/models/*
 !artifacts/models/.gitkeep
+*.db
+*.sqlite
+mlflow.db
+airflow/logs/
+airflow/data/
+
+

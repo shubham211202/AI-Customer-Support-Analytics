@@ -21,3 +21,21 @@ Run tests:
 ```powershell
 pytest
 ```
+
+## VS Code
+
+The repository includes VS Code tasks and a debug configuration.
+
+Use this order:
+
+```text
+Terminal > Run Task > Backend: install dependencies
+Terminal > Run Task > Backend: migrate local SQLite
+Run and Debug > Backend: FastAPI localhost
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000/docs
+```

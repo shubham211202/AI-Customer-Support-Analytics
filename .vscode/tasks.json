@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Backend: install dependencies",
+      "type": "shell",
+      "command": ".\\.venv\\Scripts\\python.exe -m pip install -e \".[dev]\"",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: migrate local SQLite",
+      "type": "shell",
+      "command": ".\\.venv\\Scripts\\alembic.exe upgrade head",
+      "options": {
+        "cwd": "${workspaceFolder}/backend",
+        "env": {
+          "DATABASE_URL": "sqlite:///./local.db"
+        }
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: run tests",
+      "type": "shell",
+      "command": ".\\.venv\\Scripts\\python.exe -m pytest",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: lint",
+      "type": "shell",
+      "command": ".\\.venv\\Scripts\\python.exe -m ruff check .",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

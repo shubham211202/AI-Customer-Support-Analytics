@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'AI Customer Support Dashboards'
+    orgId: 1
+    folder: 'AI Support Analytics'
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
