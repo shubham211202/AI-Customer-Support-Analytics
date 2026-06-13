@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import mlflow
 import mlflow.sklearn
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
 from airflow import DAG
 from airflow.operators.python import PythonOperator
@@ -69,7 +69,7 @@ def train_and_register_models():
         # Train and register Category Model
         cat_pipe = Pipeline([
             ('vectorizer', TfidfVectorizer(lowercase=True, stop_words='english')),
-            ('classifier', LogisticRegression(max_iter=1000))
+            ('classifier', RandomForestClassifier(n_estimators=100, random_state=42))
         ])
         cat_pipe.fit(X_cat, y_cat)
         mlflow.sklearn.log_model(
@@ -81,7 +81,7 @@ def train_and_register_models():
         # Train and register Sentiment Model
         sent_pipe = Pipeline([
             ('vectorizer', TfidfVectorizer(lowercase=True, stop_words='english')),
-            ('classifier', LogisticRegression(max_iter=1000))
+            ('classifier', RandomForestClassifier(n_estimators=100, random_state=42))
         ])
         sent_pipe.fit(X_sent, y_sent)
         mlflow.sklearn.log_model(
@@ -93,7 +93,7 @@ def train_and_register_models():
         # Train and register Priority Model
         prio_pipe = Pipeline([
             ('vectorizer', TfidfVectorizer(lowercase=True, stop_words='english')),
-            ('classifier', LogisticRegression(max_iter=1000))
+            ('classifier', RandomForestClassifier(n_estimators=100, random_state=42))
         ])
         prio_pipe.fit(X_prio, y_prio)
         mlflow.sklearn.log_model(
