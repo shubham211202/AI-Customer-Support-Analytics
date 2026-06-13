@@ -18,5 +18,5 @@ artifacts/models/*
 mlflow.db
 airflow/logs/
 airflow/data/
-
+backups/
 

@@ -15,6 +15,7 @@ services:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d support_analytics"]
       interval: 5s
@@ -27,8 +28,6 @@ services:
       dockerfile: Dockerfile
     container_name: support_analytics_backend
     restart: always
-    ports:
-      - "8000:8000"
     environment:
       - DATABASE_URL=postgresql+psycopg://postgres:postgres@db:5432/support_analytics
       - MLFLOW_TRACKING_URI=http://mlflow:5000
@@ -43,6 +42,29 @@ services:
     volumes:
       - app_logs:/app/logs
     command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: support_analytics_frontend
+    restart: always
+    depends_on:
+      - backend
+
+  nginx-gateway:
+    image: nginx:1.25-alpine
+    container_name: support_analytics_nginx_gateway
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./monitoring/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./monitoring/nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
 
   mlflow:
     image: ghcr.io/mlflow/mlflow:v2.11.3
