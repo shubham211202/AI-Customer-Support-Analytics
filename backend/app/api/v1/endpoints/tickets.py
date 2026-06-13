@@ -1,9 +1,9 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Query, Response, status
+from fastapi import APIRouter, Query, Response, status, Depends
 
-from app.api.deps import TicketServiceDep
+from app.api.deps import TicketServiceDep, get_current_user
 from app.schemas.ticket import (
     TicketCategory,
     TicketCreate,
@@ -15,7 +15,7 @@ from app.schemas.ticket import (
     TicketStatusUpdate,
 )
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.post("", response_model=TicketRead, status_code=status.HTTP_201_CREATED)

@@ -6,10 +6,14 @@ import { TicketQueue } from './components/TicketQueue';
 import { TicketDetailModal } from './components/TicketDetailModal';
 import { CreateTicketModal } from './components/CreateTicketModal';
 import { ModelControl } from './components/ModelControl';
+import { Login } from './components/Login';
 
 type Tab = 'dashboard' | 'queue' | 'model';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [username, setUsername] = useState(localStorage.getItem('username') || '');
+  const [role, setRole] = useState(localStorage.getItem('role') || '');
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [tickets, setTickets] = useState<TicketRead[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<TicketRead | null>(null);
@@ -43,10 +47,38 @@ function App() {
     }
   }, [showToast]);
 
+  const checkAuth = useCallback(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+    setUsername(localStorage.getItem('username') || '');
+    setRole(localStorage.getItem('role') || '');
+  }, []);
+
   useEffect(() => {
-    /* eslint-disable-next-line react-hooks/set-state-in-effect */
-    fetchTickets();
-  }, [fetchTickets]);
+    window.addEventListener('auth-change', checkAuth);
+    return () => {
+      window.removeEventListener('auth-change', checkAuth);
+    };
+  }, [checkAuth]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchTickets();
+    }
+  }, [isAuthenticated, fetchTickets]);
+
+  const handleLoginSuccess = () => {
+    checkAuth();
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    checkAuth();
+    setTickets([]);
+    showToast('Logged out successfully.');
+  };
 
   // Event Handlers for child components
   const handleTicketCreated = (newTicket: TicketRead) => {
@@ -69,6 +101,26 @@ function App() {
     showToast('Ticket deleted successfully.');
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="app-container">
+        {toastMessage && <div className="toast">{toastMessage}</div>}
+        <header className="header">
+          <div className="header-title-container">
+            <h1>Customer Support Analytics</h1>
+            <p className="header-subtitle">
+              AI-Driven Auto-Prioritization & Classification Dashboard
+            </p>
+          </div>
+        </header>
+        <Login onLoginSuccess={handleLoginSuccess} />
+        <footer style={{ marginTop: '4rem', borderTop: '1px solid hsl(var(--card-border))', paddingTop: '1.5rem', textAlign: 'center', fontSize: '0.8rem', color: 'hsl(var(--text-dim))' }}>
+          AI Support Analytics Portal &bull; MLflow Registry Integration &bull; FastAPI + React TS
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       {/* Toast Alert */}
@@ -83,27 +135,41 @@ function App() {
           </p>
         </div>
 
-        {/* Tab Navigation */}
-        <nav className="nav-tabs">
-          <button
-            className={`tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            📊 Analytics
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'queue' ? 'active' : ''}`}
-            onClick={() => setActiveTab('queue')}
-          >
-            📋 Ticket Queue
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'model' ? 'active' : ''}`}
-            onClick={() => setActiveTab('model')}
-          >
-            ⚙️ MLflow Sync
-          </button>
-        </nav>
+        {/* Profile and Tab Navigation Row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          {/* User Profile Info */}
+          <div className="user-profile-badge">
+            <span className="profile-username">👤 {username}</span>
+            <span className={`role-tag ${role}`}>{role}</span>
+            <button className="logout-icon-btn" title="Logout" onClick={handleLogout}>
+              🚪
+            </button>
+          </div>
+
+          {/* Tab Navigation */}
+          <nav className="nav-tabs">
+            <button
+              className={`tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setActiveTab('dashboard')}
+            >
+              📊 Analytics
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'queue' ? 'active' : ''}`}
+              onClick={() => setActiveTab('queue')}
+            >
+              📋 Ticket Queue
+            </button>
+            {role === 'admin' && (
+              <button
+                className={`tab-btn ${activeTab === 'model' ? 'active' : ''}`}
+                onClick={() => setActiveTab('model')}
+              >
+                ⚙️ MLflow Sync
+              </button>
+            )}
+          </nav>
+        </div>
       </header>
 
       {/* Main Content Area */}
@@ -131,7 +197,7 @@ function App() {
                 onCreateTicketClick={() => setIsCreateModalOpen(true)}
               />
             )}
-            {activeTab === 'model' && <ModelControl onShowToast={showToast} />}
+            {role === 'admin' && activeTab === 'model' && <ModelControl onShowToast={showToast} />}
           </>
         )}
       </main>

@@ -56,16 +56,51 @@ export interface ReloadModelResponse {
   model_version: string | null;
 }
 
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  username: string;
+  role: string;
+}
+
+export interface UserResponse {
+  id: string;
+  username: string;
+  role: string;
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const headers = new Headers(options?.headers);
+  
+  // Conditionally set Content-Type to application/json
+  if (
+    !headers.has('Content-Type') && 
+    !(options?.body instanceof URLSearchParams) && 
+    !(options?.body instanceof FormData)
+  ) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  // Inject Bearer Token if present in localStorage
+  const token = localStorage.getItem('token');
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options?.headers || {}),
-    },
+    headers,
   });
 
   if (!response.ok) {
+    // If we receive a 401 Unauthorized, automatically clear token and redirect/handle if needed
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      localStorage.removeItem('role');
+      window.dispatchEvent(new Event('auth-change'));
+    }
+
     let errorMessage = `HTTP error! Status: ${response.status}`;
     try {
       const errBody = await response.json();
@@ -90,6 +125,26 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  login: (username: string, password: string): Promise<TokenResponse> => {
+    const params = new URLSearchParams();
+    params.append('username', username);
+    params.append('password', password);
+    return request<TokenResponse>('/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    });
+  },
+
+  register: (username: string, password: string, role: string): Promise<UserResponse> => {
+    return request<UserResponse>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ username, password, role }),
+    });
+  },
+
   getHealth: (): Promise<HealthResponse> => {
     return request<HealthResponse>('/health');
   },
