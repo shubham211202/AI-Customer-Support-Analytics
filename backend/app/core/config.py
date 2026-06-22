@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     app_name: str = "AI-Powered Customer Support Analytics Platform"
     app_env: str = "local"
     database_url: str = Field(
-        default="postgresql+psycopg://postgres:postgres@localhost:5432/support_analytics"
+        default="postgresql+psycopg://postgres:Shubham%40211202@localhost:5432/support_analytics"
     )
     model_version: str = "baseline-v1"
 

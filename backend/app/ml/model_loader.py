@@ -52,7 +52,7 @@ class SupportTicketAnalyzer:
         raise Exception(f"No registered versions found for model {model_name}")
 
     def load_models(self) -> None:
-        tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000")
+        tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
         mlflow.set_tracking_uri(tracking_uri)
 
         logger.info(f"Connecting to MLflow Tracking Server at {tracking_uri}...")

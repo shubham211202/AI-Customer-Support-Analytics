@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session, selectinload
 
-from app.models.prediction import TicketPrediction
+from app.models.prediction import Prediction
 from app.models.ticket import Ticket
 from app.schemas.prediction import PredictionCreate
 from app.schemas.ticket import TicketCreate
@@ -30,8 +30,8 @@ class TicketRepository:
         self,
         ticket_id: uuid.UUID,
         prediction_in: PredictionCreate,
-    ) -> TicketPrediction:
-        prediction = TicketPrediction(ticket_id=ticket_id, **prediction_in.model_dump())
+    ) -> Prediction:
+        prediction = Prediction(ticket_id=ticket_id, **prediction_in.model_dump())
         self.db.add(prediction)
         self.db.flush()
         return prediction
@@ -66,17 +66,17 @@ class TicketRepository:
             count_statement = count_statement.where(Ticket.status == status)
 
         if priority or category or sentiment:
-            statement = statement.join(TicketPrediction)
-            count_statement = count_statement.join(TicketPrediction)
+            statement = statement.join(Prediction)
+            count_statement = count_statement.join(Prediction)
             if priority:
-                statement = statement.where(TicketPrediction.priority == priority)
-                count_statement = count_statement.where(TicketPrediction.priority == priority)
+                statement = statement.where(Prediction.priority == priority)
+                count_statement = count_statement.where(Prediction.priority == priority)
             if category:
-                statement = statement.where(TicketPrediction.category == category)
-                count_statement = count_statement.where(TicketPrediction.category == category)
+                statement = statement.where(Prediction.category == category)
+                count_statement = count_statement.where(Prediction.category == category)
             if sentiment:
-                statement = statement.where(TicketPrediction.sentiment == sentiment)
-                count_statement = count_statement.where(TicketPrediction.sentiment == sentiment)
+                statement = statement.where(Prediction.sentiment == sentiment)
+                count_statement = count_statement.where(Prediction.sentiment == sentiment)
 
         statement = statement.order_by(Ticket.created_at.desc()).limit(limit).offset(offset)
         tickets = list(self.db.scalars(statement).unique().all())
