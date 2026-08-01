@@ -1,38 +1,32 @@
-from __future__ import annotations
-
-from datetime import datetime, timezone
-
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.session import Base
+from app.models.base import TimestampMixin
 
 
-def utc_now() -> datetime:
-    return datetime.now(timezone.utc)
-
-
-class User(Base):
+class User(TimestampMixin, Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False,
+    )
 
-    name = Column(String, nullable=False)
-
-    email = Column(
-        String,
+    email: Mapped[str] = mapped_column(
+        String(255),
         unique=True,
-        nullable=False
+        index=True,
+        nullable=False,
     )
 
-    password = Column(String, nullable=False)
-
-    role = Column(
-        String,
-        default="user",
-        nullable=False
+    password: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
     )
 
-    created_at = Column(
-        DateTime(timezone=True),
-        default=utc_now
+    role: Mapped[str] = mapped_column(
+        String(20),
+        default="agent",
+        nullable=False,
     )

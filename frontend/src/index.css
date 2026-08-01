@@ -1,15 +1,16 @@
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
+@import "tailwindcss";
+
+/* Custom Theme Variables */
+:root {
+  --primary: #2563eb;
+  --secondary: #0f172a;
+  --background: #f8fafc;
+  --card: #ffffff;
+  --text: #0f172a;
 }
 
-body{
-  font-family: Inter, Arial, sans-serif;
-  background:#f5f7fb;
-}
-
-a{
-  text-decoration:none;
-  color:inherit;
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: Inter, sans-serif;
 }
